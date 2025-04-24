@@ -4,13 +4,19 @@
   "description": "��#\u0000 \u0000P\u0000r\u0000o\u0000d\u0000u\u0000c\u0000t\u0000E\u0000C\u0000o\u0000m\u0000m\u0000e\u0000r\u0000c\u0000e\u0000F\u0000E\u0000\r\u0000 \u0000",
   "main": "index.js",
   "scripts": {
-    "start" : "nodemon --inspect index.js",
+    "start": "nodemon --inspect index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^5.1.0"
+    "body-parser": "^2.2.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "mongodb": "^6.16.0",
+    "mongoose": "^8.13.2",
+    "mongoose-slug-updater": "^3.3.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"
