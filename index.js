@@ -12,12 +12,14 @@ const app = express();
 const port = process.env.PORT;
 // CORS
 // Cách 1: Tất cả tên miền được phép truy cập
-app.use(cors());
-
+app.use(cors({
+  origin: "*"
+}));
 // End CORS
 
 // parse application/json
 app.use(bodyParser.json());
+app.use(express.json()) ;
 
 routesApi(app);
 
