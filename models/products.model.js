@@ -19,16 +19,6 @@ const productModelSchema = new mongoose.Schema({
          slug: "title",
          unique : true 
         },
-    createBy:{
-        createAt: {
-            type:Date ,
-            default:Date.now
-        }
-    },
-    updateBy:
-        {
-            updateAt:Date
-        },
     featured:{
         type:String,
         default:"0"
