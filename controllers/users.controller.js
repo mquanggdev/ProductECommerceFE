@@ -75,13 +75,6 @@ module.exports.login = async (req, res) => {
             })
         }
         
-        // Set cookie trong response header
-        res.cookie("token", existUser.token, {
-            httpOnly: true,
-            maxAge: 86400 * 1000,  
-            sameSite: 'Strict' 
-          });
-
         res.status(200).json({
             success : true ,
             message : "Đăng nhập thành công.",
@@ -156,11 +149,11 @@ module.exports.otpPassword = async (req, res) => {
     email: email
   });
 
-    res.cookie("token", user.token, {
-    httpOnly: true, 
-    maxAge: 86400 * 1000,  
-    sameSite: 'Strict' 
-    });
+    // res.cookie("token", user.token, {
+    // httpOnly: true, 
+    // maxAge: 86400 * 1000,  
+    // sameSite: 'Strict' 
+    // });
 
   res.status(200).json({
     message : "Xác thực thành công!",
