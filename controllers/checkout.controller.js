@@ -29,19 +29,17 @@ module.exports.index = async (req, res) => {
     const cartDetail = {
       _id: cart._id,
       products: cart.products
-        .filter(item => item.productId) 
+        .filter(item => item.productId) // Đảm bảo sản phẩm tồn tại
         .map(item => {
           const productInfo = item.productId;
-          const priceNew = item.priceAtAdd
-            ? item.priceAtAdd * (1 - (item.discountAtAdd || 0) / 100)
-            : productInfo.price * (1 - productInfo.discountPercentage / 100);
+          const priceNew = productInfo.price * (1 - (productInfo.discountPercentage || 0) / 100);
           return {
             productId: productInfo._id,
             title: productInfo.title,
             thumbnail: productInfo.thumbnail,
             slug: productInfo.slug,
-            price: item.priceAtAdd || productInfo.price,
-            discountPercentage: item.discountAtAdd || productInfo.discountPercentage,
+            price: productInfo.price,
+            discountPercentage: productInfo.discountPercentage,
             priceNew,
             quantity: item.quantity,
             totalPrice: priceNew * item.quantity,
@@ -82,17 +80,12 @@ module.exports.index = async (req, res) => {
 // [Post] /checkout/order
 module.exports.orderPost = async (req , res) => {
 
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
   try {
     const userInfo = req.body;
     const cartId = req.cartId;
 
     // Xác thực userInfo
     if (!userInfo.fullname || !userInfo.phone || !userInfo.address) {
-      await session.abortTransaction();
-      session.endSession();
       return res.status(400).json({
         success: false,
         message: 'Thông tin người dùng không đầy đủ'
@@ -102,11 +95,9 @@ module.exports.orderPost = async (req , res) => {
     const cart = await Cart.findOne({ _id: cartId }).populate({
       path: 'products.productId',
       select: 'price discountPercentage stock'
-    }).session(session);
+    });
 
     if (!cart || cart.products.length === 0) {
-      await session.abortTransaction();
-      session.endSession();
       return res.status(400).json({
         success: false,
         message: 'Giỏ hàng trống hoặc không tồn tại'
@@ -126,8 +117,6 @@ module.exports.orderPost = async (req , res) => {
     for (const item of cart.products) {
       const productInfo = item.productId;
       if (!productInfo) {
-        await session.abortTransaction();
-        session.endSession();
         return res.status(400).json({
           success: false,
           message: `Sản phẩm ${item.productId} không tồn tại`
@@ -135,8 +124,6 @@ module.exports.orderPost = async (req , res) => {
       }
 
       if (productInfo.stock < item.quantity) {
-        await session.abortTransaction();
-        session.endSession();
         return res.status(400).json({
           success: false,
           message: `Sản phẩm ${productInfo.title} không đủ tồn kho`
@@ -151,27 +138,28 @@ module.exports.orderPost = async (req , res) => {
       });
     }
 
-    // Cập nhật tồn kho
+    // Cập nhật tồn kho nguyên tử
     for (const item of cart.products) {
-      await Product.updateOne(
-        { _id: item.productId._id },
+      const updateResult = await Product.findOneAndUpdate(
+        { _id: item.productId._id, stock: { $gte: item.quantity } }, // Đảm bảo đủ tồn kho
         { $inc: { stock: -item.quantity } },
-        { session }
+        { new: true } // Trả về document sau khi cập nhật
       );
+
+      if (!updateResult) {
+        return res.status(400).json({
+          success: false,
+          message: `Sản phẩm ${item.productId} không đủ tồn kho hoặc không tồn tại`
+        });
+      }
     }
 
     // Tạo đơn hàng
     const newOrder = new Order(orderData);
-    await newOrder.save({ session });
+    await newOrder.save();
 
-    await Cart.updateOne(
-      { _id: cartId },
-      { products: [] },
-      { session }
-    );
-
-    await session.commitTransaction();
-    session.endSession();
+    // Xóa giỏ hàng
+    await Cart.updateOne({ _id: cartId }, { products: [] });
 
     res.status(200).json({
       success: true,
@@ -179,8 +167,6 @@ module.exports.orderPost = async (req , res) => {
       orderId: newOrder._id
     });
   } catch (error) {
-    await session.abortTransaction();
-    session.endSession();
     console.error(error);
     res.status(500).json({
       success: false,
