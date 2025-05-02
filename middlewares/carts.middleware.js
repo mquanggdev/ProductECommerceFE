@@ -9,7 +9,7 @@ module.exports.ensureCart = async (req, res, next) => {
    const cart = new Cart();
    await cart.save()
 
-    res.cookie('cartId', cart.cartId, {
+    res.cookie('cartId', cart.id, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'Strict',

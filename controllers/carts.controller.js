@@ -57,9 +57,6 @@ module.exports.addPost = async (req,res) => {
         const existProductInCart = cart.products.find(item => {
             return item.productId.toString() == productId
         })
-        if (!existProductInCart) {
-            return res.status(404).json({ message: 'Sản phẩm không tồn tại hoặc không khả dụng' });
-          }
 
         // Kiểm tra tồn kho -> khi người dùng nhập số lượng quá số lượng tồn kho
         if (stockProduct < quantity) {
@@ -97,14 +94,14 @@ module.exports.addPost = async (req,res) => {
 
         res.status(200).json({ message: 'Thêm sản phẩm thành công' });
     } catch (error) {
-        res.status(500).json({ message: 'Lỗi server' });
+        res.status(500).json({ message: 'Lỗi server ' + error.message});
     }
 }
 
 // GET /carts/delete/:productId 
 module.exports.delete = async (req , res) => {
     try {
-        const cartId = req.cartId;
+        const cartId = req.cookies.cartId;
         const productId = req.params.productId;
     
         const cart = await Cart.findOne({ _id: cartId });
@@ -139,9 +136,9 @@ module.exports.delete = async (req , res) => {
 // Get /cart/update/:productId/:quantity 
 module.exports.update = async (req , res) => {
     try {
-        const cartId = req.cartId;
+        const cartId = req.cookies.cartId;
         const productId = req.params.productId;
-        const quantity = parseInt(req.body.quantity);
+        const quantity = req.params.quantity;
     
         // Kiểm tra số lượng
         if (!quantity || quantity < 1) {
