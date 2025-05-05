@@ -149,3 +149,31 @@ module.exports.deletePr = async (req, res) => {
         });
     }
 };
+
+// // [Get] /admin/products/detailPr/1293948457573493
+module.exports.deletePr = async (req, res) => {
+    try {
+        const idProduct = req.params.id ;
+        if(!idProduct) {
+            res.status(403).json({
+                success: false,
+                message: "Sản phẩm đang truy vấn không tồn tại"
+            });
+        }
+
+        const data = await Product.findOne({
+            _id : idProduct
+        })
+        res.status(200).json({
+            success: true,
+            message : "Delete Success",
+            data
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Internal server error",
+            error: error.message
+        });
+    }
+};

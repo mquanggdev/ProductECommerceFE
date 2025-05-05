@@ -7,6 +7,7 @@ router.get("/", controller.index );
 router.post("/createPr", controller.createPr) ;
 router.patch("/updatePr/:id" , controller.updatePr) ;
 router.patch("/deletePr/:id" , controller.deletePr) ; 
+router.patch("/detail/:id" , controller.detailPr) ;
 
 
 
