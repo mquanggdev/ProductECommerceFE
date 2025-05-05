@@ -8,6 +8,7 @@ const cookieParser = require('cookie-parser')
 const database = require("./config/database");
 database.connect();
 const routesApi = require("./routes/index.route");
+const routesAdminApi = require("./routes/admin/index.route");
 
 const app = express();
 const port = process.env.PORT;
@@ -24,6 +25,7 @@ app.use(express.json()) ;
 app.use(cookieParser('Yalidas'));
 
 routesApi(app);
+routesAdminApi(app);
 
 
 app.listen(port, () => {

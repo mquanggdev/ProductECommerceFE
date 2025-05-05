@@ -10,6 +10,7 @@ const productModelSchema = new mongoose.Schema({
     stock: Number,
     thumbnail: String,
     position: Number,
+    status : String,
     deleted: {
         type: Boolean,
         default: false
