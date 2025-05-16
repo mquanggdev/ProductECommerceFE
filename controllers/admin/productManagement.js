@@ -50,19 +50,19 @@ module.exports.index = async (req, res) => {
 module.exports.createPr = async (req, res) => {
     try {
         const data = {
-            title : req.body.title ,
-            description : req.body.description,
-            category_id : req.body.category_id,
-            price : parseInt(req.body.price) ,
-            discountPercentage: parseInt(req.body.discountPercentage) ,
+            title: req.body.title,
+            description: req.body.description,
+            category_id: req.body.category_id,
+            price: parseInt(req.body.price),
+            discountPercentage: parseInt(req.body.discountPercentage),
             stock: parseInt(req.body.stock),
             thumbnail: req.body.thumbnail,
             position: parseInt(req.body.position), // FE tự đánh số thứ tự tăng dần , logic rất dễ
-            status : req.body.status, 
+            status: req.body.status,
         }
 
-        const newPr = new Product(data) ;
-        await newPr.save() ;
+        const newPr = new Product(data);
+        await newPr.save();
 
         res.status(200).json({
             success: true,
@@ -81,8 +81,8 @@ module.exports.createPr = async (req, res) => {
 // // [PATCH] /admin/products/updatePr/1293948457573493(id) - dãy id này fe phải gắn lên 
 module.exports.updatePr = async (req, res) => {
     try {
-        const idProduct = req.params.id ;
-        if(!idProduct) {
+        const idProduct = req.params.id;
+        if (!idProduct) {
             res.status(403).json({
                 success: false,
                 message: "Sản phẩm đang truy vấn không tồn tại"
@@ -90,20 +90,20 @@ module.exports.updatePr = async (req, res) => {
         }
 
         const data = {
-            title : req.body.title ,
-            description : req.body.description,
-            category_id : req.body.category_id,
-            price : parseInt(req.body.price) ,
-            discountPercentage: parseInt(req.body.discountPercentage) ,
+            title: req.body.title,
+            description: req.body.description,
+            category_id: req.body.category_id,
+            price: parseInt(req.body.price),
+            discountPercentage: parseInt(req.body.discountPercentage),
             stock: parseInt(req.body.stock),
             thumbnail: req.body.thumbnail,
             position: parseInt(req.body.position),
-            status : req.body.status, 
+            status: req.body.status,
         }
 
         await Product.updateOne({
-            _id : idProduct 
-        } , {
+            _id: idProduct
+        }, {
             ...data
         })
 
@@ -124,8 +124,8 @@ module.exports.updatePr = async (req, res) => {
 // // [PATCH] /admin/products/deletePr/1293948457573493
 module.exports.deletePr = async (req, res) => {
     try {
-        const idProduct = req.params.id ;
-        if(!idProduct) {
+        const idProduct = req.params.id;
+        if (!idProduct) {
             res.status(403).json({
                 success: false,
                 message: "Sản phẩm đang truy vấn không tồn tại"
@@ -133,13 +133,13 @@ module.exports.deletePr = async (req, res) => {
         }
 
         await Product.updateOne({
-            _id : idProduct
-        } , {
-            deleted : true 
+            _id: idProduct
+        }, {
+            deleted: true
         })
         res.status(200).json({
             success: true,
-            message : "Delete Success"
+            message: "Delete Success"
         });
     } catch (error) {
         res.status(500).json({
@@ -151,10 +151,10 @@ module.exports.deletePr = async (req, res) => {
 };
 
 // // [Get] /admin/products/detailPr/1293948457573493
-module.exports.deletePr = async (req, res) => {
+module.exports.detailPr = async (req, res) => {
     try {
-        const idProduct = req.params.id ;
-        if(!idProduct) {
+        const idProduct = req.params.id;
+        if (!idProduct) {
             res.status(403).json({
                 success: false,
                 message: "Sản phẩm đang truy vấn không tồn tại"
@@ -162,11 +162,11 @@ module.exports.deletePr = async (req, res) => {
         }
 
         const data = await Product.findOne({
-            _id : idProduct
+            _id: idProduct
         })
         res.status(200).json({
             success: true,
-            message : "Delete Success",
+            message: "Delete Success",
             data
         });
     } catch (error) {
